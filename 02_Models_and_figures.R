@@ -88,8 +88,9 @@ contr_factor <- ggplot(results_all_purity, aes(x = reorder(factor, contribution,
   stat_summary(fun = mean, geom = "point", shape = 18, color = "purple", size = 9) +
   stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.25, color = "purple") +
   #  geom_hline(yintercept = 0.142, linetype = "dashed", color = "black") +
-  coord_flip() +
   theme_minimal() +
+  scale_y_continuous(labels = scales::percent) +
+  coord_flip(ylim = c(0, 0.4)) +
   labs(x = "Factor", y = "Importance") +
   theme(text = element_text(size = 32))
 ggsave(filename = "contr_factor_37_44.png", plot = contr_factor, width = 10, height = 8, units = "in", dpi = 300)
@@ -98,8 +99,9 @@ ggsave(filename = "contr_factor_37_44.png", plot = contr_factor, width = 10, hei
 contrmorph_language <- ggplot(results_morph_purity, aes(x = reorder(lang, contribution, FUN = mean), y = contribution)) +
   stat_summary(fun = mean, geom = "point", shape = 18, color = "purple", size = 9) +
   stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.25, color = "purple") +
-  coord_flip() +
   theme_minimal() +
+  scale_y_continuous(labels = scales::percent) +
+  coord_flip(ylim = c(0, 0.3)) +
   labs(x = "Language", y = "Importance of morph") +
   theme(text = element_text(size = 32))
 ggsave(filename = "contrmorph_language_37_44.png", plot = contrmorph_language, width = 10, height = 12, units = "in", dpi = 300)
@@ -110,9 +112,9 @@ homophone_data_with_counts <- merge(results_morph_purity, homophone_count, by = 
 crowdedness_contrmorph <- ggplot(data= homophone_data_with_counts, aes(x = n_homophones, y = contribution)) +
   geom_point() +
   geom_smooth(method = "lm", color = "purple", linewidth = 3) +
+  scale_y_continuous(labels = scales::percent, limits = c(0, 0.175)) +
   labs(x = "Crowdedness", y = "Importance of morph") +
   xlim(2,6) +
-  ylim(0,0.175)+
   theme(text = element_text(size = 32))
 ggsave(filename = "crowdedness_contrmorph_37_44.png", plot = crowdedness_contrmorph, width = 10, height = 10, units = "in", dpi = 300)
 r_crowdedness <- cor(homophone_data_with_counts$contribution, homophone_data_with_counts$n_h)
@@ -124,7 +126,8 @@ contr_fact_s <- ggplot(s_data, aes(x = reorder(factor, contribution, FUN = mean)
   stat_summary(fun = mean, geom = "point", shape = 18, size = 9) +
   stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.25) +
   scale_color_manual(values = c("purple", "orange"))  +
-  coord_flip() +
+  scale_y_continuous(labels = scales::percent) +
+  coord_flip(ylim = c(0.05, 0.15)) +
   theme_minimal() +
   labs(x = "Factor", y = "Importance") +
   theme(text = element_text(size = 32))
@@ -135,7 +138,8 @@ contr_fact_mt <- ggplot(mt_data, aes(x = reorder(factor, contribution, FUN = mea
   stat_summary(fun = mean, geom = "point", shape = 18, size = 9) +
   stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.25) +
   scale_color_manual(values = c("purple", "orange"))  +
-  coord_flip() +
+  scale_y_continuous(labels = scales::percent) +
+  coord_flip(ylim = c(0.05, 0.15)) +
   theme_minimal() +
   labs(x = "Factor", y = "Importance") +
   theme(text = element_text(size = 32))
@@ -187,6 +191,10 @@ smallest_hom_sets <- hom_set_counts %>%
 
 largest_hom_sets <- hom_set_counts %>%
   filter(count == max(count))
+
+# Reduplication
+reduplication_data_unfiltered <- homophone_data %>% filter(str_detect(mb, "~")) %>% distinct(lang, mb) %>% mutate(morph = str_replace_all(mb, "~", ""))
+reduplication_data_filtered <- reduplication_data_unfiltered %>% semi_join(results_all_purity, by = c("lang", "morph"))
 
 
 ### 10) Map
