@@ -1,4 +1,4 @@
-# Models and figures for Paschen (20xx): Homophones
+# Models and figures for the submission "Acoustic disambiguation of homophonous morphs is exceptional"
 
 library(dplyr)
 library(tidyverse)
