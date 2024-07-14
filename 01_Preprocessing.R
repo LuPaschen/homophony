@@ -1,4 +1,4 @@
-# Preprocessing script for Paschen (20xx): Homophones
+# Preprocessing script for the submission "Acoustic disambiguation of homophonous morphs is exceptional"
 
 library(dplyr)
 library(tidyverse)
